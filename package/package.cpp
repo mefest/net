@@ -16,8 +16,7 @@ QByteArray Package::serialize()
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     size=getSize();
-//    qDebug()<<size;
-    out << size<<type;
+    out << size<<quint16(type);
     return block;
     }
 
@@ -29,4 +28,5 @@ quint16 Package::getSize()
     tmp+=sizeof(type);
     return tmp;
 }
+
 

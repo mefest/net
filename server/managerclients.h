@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include "authmanager.h"
 #include "client/client.h"
+#include "package/packageauth.h"
 
 class managerClients : public QObject
 {
@@ -15,8 +17,13 @@ public:
     void add(Client* client);
     void remove(Client* client);
     void del(Client* client);
+    bool authorization(PackageAuth *pkAuth);
+
 
 private:
+    AuthManager *authManager;
+
+    bool isLoginFree(QString login);
 
 
 signals:

@@ -9,6 +9,7 @@ Server::Server(QObject *parent):
 {
     status=Server::stop;
     mClients= new managerClients(this);
+
 }
 
 bool Server::start(QHostAddress addr, quint16 port)
@@ -19,6 +20,11 @@ bool Server::start(QHostAddress addr, quint16 port)
     }else{
         return false;
     }
+}
+
+bool Server::start(QString addr, quint16 port)
+{
+    return this->start(QHostAddress(addr),port);
 }
 
 void Server::incomingConnection(qintptr handle)
@@ -33,15 +39,28 @@ void Server::incomingConnection(qintptr handle)
         connect(client, SIGNAL(recivPackage(Package*)),this,SLOT(onRecivPackage(Package*)));
         connect(client,SIGNAL(disconnect()),this,SLOT(onDisconnect()));
         client->setSocked(sok);
-        mClients->add(client);
+//        mClients->add(client);
         qDebug()<<"new connect on server";
 }
 
 void Server::onRecivPackage(Package *package)
 {
-    qDebug()<<package;
-//    PackageMessage *pkMes=qobject_cast<PackageMessage*>(package);
-    qDebug()<<"сервер получил пакет типа "<<package->type;
+    Client *client=qobject_cast<Client*>(QObject::sender());
+    if(package->getType()==Package::Auth && ( !client->isAuth() ) ){
+        PackageAuth *auth=qobject_cast<PackageAuth*>(package);
+        if( mClients->authorization( auth) ){
+            mClients->add(client);
+            client->login=auth->login;
+            qDebug()<<"auth coml";
+        }else{
+            qDebug()<<"Ошибка авторизации";
+        }
+    }else{
+        PackageMessage *pkMes=qobject_cast<PackageMessage*>(package);
+//        qDebug()<<"сервер получил пакет типа "<<pkMes->getMessage();
+    }
+
+    emit recivPackage(package);
 }
 
 void Server::onDisconnect()

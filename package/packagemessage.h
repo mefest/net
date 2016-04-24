@@ -15,17 +15,17 @@ public:
     void setMessage(QString mes);
     QString getMessage(){ return message;}
 
-
     virtual QByteArray serialize();
     virtual quint16 getSize();
-
+    virtual void fromStream(QDataStream &stream);
+    void dump();
 
     friend QDataStream & operator <<(QDataStream& s, const PackageMessage &us);
     friend QDataStream & operator <<(QDataStream& s, const PackageMessage *us);
+
+    friend QDataStream & operator >>(QDataStream& s,  PackageMessage *us);
 private:
     QString message;
-
-
 
 };
 

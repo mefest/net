@@ -3,7 +3,7 @@
 #include <QObject>
 #include "package/package.h"
 
-class PackageCommand : public Package
+class PackageCommand : public  Package
 {
     Q_OBJECT
 public:
@@ -12,15 +12,19 @@ public:
 
     quint16 command;
 
-    virtual QByteArray serialize();
-    virtual quint16 getSize();
-
-//    QDataStream& operator<<(QDataStream& out);
 
 friend QDataStream & operator <<(QDataStream& s, const PackageCommand &us);
 friend QDataStream & operator <<(QDataStream& s, const PackageCommand *us);
-friend QDebug & operator <<(QDebug& s, const PackageCommand *us);
 
+friend QDataStream & operator >>(QDataStream& s,  PackageCommand *us);
+
+
+// Package interface
+public:
+QByteArray serialize();
+quint16 getSize();
+void fromStream(QDataStream &stream);
+void dump();
 };
 
 
